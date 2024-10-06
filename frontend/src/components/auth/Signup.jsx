@@ -10,7 +10,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "@/redux/authSlice";
-
+import { Loader2 } from "lucide-react";
 function Signup() {
     const [input,setInput]=useState({
         fullname:"",
@@ -75,7 +75,7 @@ toast.error(error.response.data.message);
         <div className=" flex items-center justify-center max-2-7xl mx-auto">
           <form
             onSubmit={submitHandler}
-            className="w-1/2 border border gray-200 rounded-md p-4 my-10"
+            className="w-1/2 border border-gray-200 rounded-md p-4 my-10"
           >
             <h1 className="font-bold text-xl mb-5">Signup</h1>
             <div className="my-2">
@@ -101,7 +101,7 @@ toast.error(error.response.data.message);
             </div>
             <div className="my-2">
               <Label>Password</Label>
-              <Input type="Password" 
+              <Input type="password" 
               value={input.password}
               name="password"
               onChange={changeEventHandler}placeholder="" />
