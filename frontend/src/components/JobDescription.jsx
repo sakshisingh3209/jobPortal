@@ -1,28 +1,79 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import useGetSingleJob from "@/hooks/useGetSingleJob";
+import { useParams } from "react-router-dom";
+import { APPLICATION_END_POINT, JOB_API_END_POINT } from "@/utils/constant";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setSingleJob } from "@/redux/jobSlice";
+import { toast } from "sonner";
 
 function JobDescription() {
-  const isApplied = false;
+  const isInitiallyApplied = singleJob?.applications?.some(application.applicant===user?._id) || false;
+  const [isApplied,setIsApplied]= useState(isInitiallyApplied);
+
+  const params=useParams();
+  const{singleJob}= useSelector(store=>store.job);
+  const {user}= useSelector(store=>store.auth);
+  
+  const jobId= params.id;
+       
+const dispatch=useDispatch();
+
+const applyJobHandler=async()=>{
+  try{
+const res= await axios.get(`${APPLICATION_END_POINT}/apply/${jobId}`,{withCredentials:true});
+if(res.data.success){
+  setIsApplied(true);  //update the local state
+  const updateSingleJob={...singleJob,applications:[...singleJob.applications,{applicant:user._id}]};
+  dispatch(setSingleJob(updateSingleJob));  //helps us to update the UI in real time
+  toast.success(res.data.message);
+}
+  }catch(error){
+console.log(error);
+toast.error(error.response.data.message);
+  }
+}
+
+
+
+  useEffect(()=>{
+    const fetchSingleJob=async()=>{
+        try{
+         const res= await axios.get(`${JOB_API_END_POINT}/get/${jobId}`,{
+            withCredentials:true
+         });
+         if(res.data.success){
+            dispatchEvent(setSingleJob(res.data.job));
+            setIsApplied(res.data.job.applications.some(application=>application.applicant===user?._id));    //ensure the state is in sync with fetched data
+         }
+        }catch(error){
+            console.log(error);
+        }
+    }
+    fetchSingleJob();
+},[jobId,dispatch,user?._id])       
   return (
     <>
       <div className="max-w-7xl mx-auto my-10">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-bold text-xl">Frontend Developer</h1>
+            <h1 className="font-bold text-xl"> {singleJob?.title} </h1>
             <div className="flex items-center gap-2 mt-4">
               <Badge className={"text-blue-700 font-bold"} variant="ghost">
-                12 Positions
+                {singleJob?.position} Positions
               </Badge>
               <Badge className={" text-[#F83002]font-bold"} variant="ghost">
-                Part Time
+              {singleJob?.jobType}
               </Badge>
               <Badge className={"text-[#7209b7] font-bold"} variant="ghost">
-                24LPA
+                {singleJob?.salary} LPA
               </Badge>
             </div>
           </div>
           <Button
+          onClick={isApplied?null : applyJobHandler}
             disabled={isApplied}
             className={`rounded-lg 
           ${
@@ -41,32 +92,32 @@ function JobDescription() {
           <h1 className="font-bold my-1">
             Role:
             <span className="pl-4 font-normal text-gray-800">
-              Frontend Developer
+         {singleJob?.title}
             </span>
           </h1>
           <h1 className="font-bold my-1">
-            Location:
+        {singleJob?.location}
             <span className="pl-4 font-normal text-gray-800">Hyderabad</span>
           </h1>
           <h1 className="font-bold my-1">
-            Description:
+      {singleJob?.description}
             <span className="pl-4 font-normal text-gray-800">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              
             </span>
           </h1>
           <h1 className="font-bold my-1">
-            Experience:
+            {singleJob?.experience} yrs
             <span className="pl-4 font-normal text-gray-800">2yrs</span>
           </h1>
           <h1 className="font-bold my-1">
-            Salary:<span className="pl-4 font-normal text-gray-800">12LPA</span>
+            {singleJob?.salary}:<span className="pl-4 font-normal text-gray-800">12LPA</span>
           </h1>
           <h1 className="font-bold my-1">
-            Total Applicants:
+            {singleJob?.application?.length}
             <span className="pl-4 font-normal text-gray-800">4</span>
           </h1>
           <h1 className="font-bold my-1">
-            Posted Date:
+         {singleJob?.createdAt.split("T")[0]}
             <span className="pl-4 font-normal text-gray-800">4-10-2024</span>
           </h1>
         </div>
