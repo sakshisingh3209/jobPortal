@@ -8,14 +8,15 @@ import { Label } from "./ui/label";
 import AppliedJobTable from "./AppliedJobTable";
 import UpdateProfileDialog from "./UpdateProfileDialog";
 import { useSelector } from "react-redux";
+import useGetAppliedJobs from "@/hooks/useGetAppliedJobs";
 
 // const skills = ["html", "css", "javascript", "react.js"];
 const isResume = true;
 function Profile() {
-  const [open,setOpen]= useState(false)
-  const {user}=useSelector(store=>store.auth);
+  useGetAppliedJobs();
+  const [open, setOpen] = useState(false);
+  const { user } = useSelector((store) => store.auth);
 
-  
   return (
     <>
       <div>
@@ -30,13 +31,15 @@ function Profile() {
                 ></AvatarImage>
               </Avatar>
               <div>
-                <h1 className="font-medium text-xl"> {user?.fullname}  </h1>
-                <p>
-                 {user?.profile?.bio}
-                </p>
+                <h1 className="font-medium text-xl"> {user?.fullname} </h1>
+                <p>{user?.profile?.bio}</p>
               </div>
             </div>
-            <Button onClick= {()=>setOpen(true)}  className="text-right" variant="outline">
+            <Button
+              onClick={() => setOpen(true)}
+              className="text-right"
+              variant="outline"
+            >
               <Pen />
             </Button>
           </div>
@@ -53,9 +56,10 @@ function Profile() {
           <div className="my-5">
             <h1>Skills</h1>
             <div className="flex items-center gap-1">
-              {
-              user?.profile?.skills.length !== 0 ? (
-               user?.profile?.skills.map((item, index) => <Badge key={index}>{item}</Badge>)
+              {user?.profile?.skills.length !== 0 ? (
+                user?.profile?.skills.map((item, index) => (
+                  <Badge key={index}>{item}</Badge>
+                ))
               ) : (
                 <span>NA</span>
               )}
@@ -63,9 +67,17 @@ function Profile() {
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label className="text-md font-bold"> Resume </Label>
-            {
-                        isResume ? <a target='blank' href={user?.profile?.resume} className='text-blue-500 w-full hover:underline cursor-pointer'>{user?.profile?.resumeOriginalName}</a> : <span>NA</span>
-                    }
+            {isResume ? (
+              <a
+                target="blank"
+                href={user?.profile?.resume}
+                className="text-blue-500 w-full hover:underline cursor-pointer"
+              >
+                {user?.profile?.resumeOriginalName}
+              </a>
+            ) : (
+              <span>NA</span>
+            )}
           </div>
         </div>
         <div className="max-w-4xl mx-auto bg-white rounded-2xl">
@@ -73,7 +85,7 @@ function Profile() {
 
           <AppliedJobTable />
         </div>
-<UpdateProfileDialog open={open} setOpen={setOpen}/>
+        <UpdateProfileDialog open={open} setOpen={setOpen} />
       </div>
     </>
   );
