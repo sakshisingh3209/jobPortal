@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../shared/Navbar";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -20,7 +20,7 @@ function Signup() {
         role:"",
         file:""
     });
-    const {loading}=useSelector(store=>store.auth);
+    const {loading,user}=useSelector(store=>store.auth);
     const dispatch= useDispatch();
     const navigate= useNavigate();
 
@@ -68,6 +68,12 @@ toast.error(error.response.data.message);
       dispatch(setLoading(false));
      }
     }
+
+    useEffect(()=>{
+      if(user){
+        navigate("/");
+      }
+    });
   return (
     <>
       <div>
